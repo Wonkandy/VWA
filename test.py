@@ -4,6 +4,7 @@ import scipy.special
 import matplotlib.pyplot as mpl
 import os.path
 import random
+
 args = sys.argv
 
 class neuralNetwork:

@@ -94,8 +94,6 @@ namespace NNForms
                     return result + stderr;
                 }
             }
-
-            
         }
 
         // Python mit gezeichnetem Bild als Argument aufrufen
@@ -150,7 +148,7 @@ namespace NNForms
             }
             */
             int[] i = Helper.ConvertBitmap(m);
-            //Test
+            
             ResetDrawing();
 
             string result = lb ? lable.Value + "," : "";
