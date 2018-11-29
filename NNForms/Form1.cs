@@ -150,7 +150,7 @@ namespace NNForms
             }
             */
             int[] i = Helper.ConvertBitmap(m);
-
+            //Test
             ResetDrawing();
 
             string result = lb ? lable.Value + "," : "";
