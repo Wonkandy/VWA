@@ -1,10 +1,4 @@
-import sys
 import numpy
-import scipy.special
-import matplotlib.pyplot as mpl
-import os.path
-import random
-from PIL import Image
 import cv2
 
 img = cv2.imread("test.bmp", cv2.IMREAD_GRAYSCALE)
