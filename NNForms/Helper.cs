@@ -199,6 +199,8 @@ namespace MNISTNeuralNetwork
             g.DrawImage(bitmap20, new Rectangle(4 - xk, 4 - yk, 20, 20),
                 new Rectangle(0, 0, 20, 20), GraphicsUnit.Pixel);
 
+            bitmap28.Save("test.bmp");
+
             // Bildinformationen in Array übertragen:
             int[] array = new int[28 * 28 ]; // +1
             /*if (target != null)

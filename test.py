@@ -4,7 +4,8 @@ import scipy.special
 import matplotlib.pyplot as mpl
 import os.path
 import random
-
+from PIL import Image
+import cv2
 args = sys.argv
 
 class neuralNetwork:
@@ -99,7 +100,7 @@ if args[1] == "train":
         all_values = record.split(',')
 
         correct_label = int(all_values[0])
-        # scale and shift the inputs
+
         inputs = (numpy.asfarray(all_values[1:]) / 255.0 * 0.99) + 0.01
 
         outputs = n.query(inputs)
@@ -118,14 +119,12 @@ if args[1] == "train":
 
 if args[1] == "testdrawing":
 
-    print("TEST")
     input_nodes = 784
     hidden_nodes = int(args[3])
     output_nodes = 10
     learning_rate = float(args[4])
 
     n = neuralNetwork(input_nodes, hidden_nodes, output_nodes, learning_rate)
-    print("TEST")
 
     if n.load():
 
@@ -141,4 +140,3 @@ if args[1] == "testdrawing":
     else:
         print("Nix da")
 
-    print("TEST")

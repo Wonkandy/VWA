@@ -17,3 +17,13 @@ C:\Users\Max Heras\OneDrive - Bundesgymnasium Wien 9, Wasagasse\VWA\Windows-Form
 C:\Users\Max Heras\OneDrive - Bundesgymnasium Wien 9, Wasagasse\VWA\Windows-Forms\NNForms\NNForms\obj\Debug\NNForms.csproj.CoreCompileInputs.cache
 C:\Users\Max Heras\OneDrive - Bundesgymnasium Wien 9, Wasagasse\VWA\Windows-Forms\NNForms\NNForms\obj\Debug\NNForms.exe
 C:\Users\Max Heras\OneDrive - Bundesgymnasium Wien 9, Wasagasse\VWA\Windows-Forms\NNForms\NNForms\obj\Debug\NNForms.pdb
+C:\Users\Max Heras\Documents\VWA\NNForms\bin\Debug\NNForms.exe.config
+C:\Users\Max Heras\Documents\VWA\NNForms\bin\Debug\NNForms.exe
+C:\Users\Max Heras\Documents\VWA\NNForms\bin\Debug\NNForms.pdb
+C:\Users\Max Heras\Documents\VWA\NNForms\obj\Debug\NNForms.csprojAssemblyReference.cache
+C:\Users\Max Heras\Documents\VWA\NNForms\obj\Debug\NNForms.output.resources
+C:\Users\Max Heras\Documents\VWA\NNForms\obj\Debug\NNForms.Properties.Resources.resources
+C:\Users\Max Heras\Documents\VWA\NNForms\obj\Debug\NNForms.csproj.GenerateResource.cache
+C:\Users\Max Heras\Documents\VWA\NNForms\obj\Debug\NNForms.csproj.CoreCompileInputs.cache
+C:\Users\Max Heras\Documents\VWA\NNForms\obj\Debug\NNForms.exe
+C:\Users\Max Heras\Documents\VWA\NNForms\obj\Debug\NNForms.pdb
