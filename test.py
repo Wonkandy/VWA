@@ -124,6 +124,10 @@ if args[1] == "testdrawing":
     output_nodes = 10
     learning_rate = float(args[4])
 
+    img_file = "test.bmp"
+    img = cv2.imread(img_file, cv2.IMREAD_GRAYSCALE)
+
+
     n = neuralNetwork(input_nodes, hidden_nodes, output_nodes, learning_rate)
 
     if n.load():
