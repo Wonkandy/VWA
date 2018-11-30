@@ -1,11 +1,19 @@
 import numpy
 import cv2
 
+#Fill array with 255 values
+def populate(a):
+    (X, Y) = a.shape
+    for x in range(X):
+        for y in range(Y):
+            a[x, y] = 255
+    return a
+
 img = cv2.imread("test.bmp", cv2.IMREAD_GRAYSCALE)
 img = cv2.bitwise_not(img)
 
 (X, Y) = img.shape
-m = numpy.zeros((X, Y))
+m = populate(numpy.zeros((X, Y)))
 
 for x in range(X):
     for y in range(Y):
@@ -24,8 +32,7 @@ cx = round(numpy.sum(dy * numpy.arange(Y)),0)
 vx = X/2 - cx
 vy = Y/2 - cy
 
-img2 = numpy.zeros((X, Y), numpy.uint8)
-
+img2 = populate(numpy.zeros((X, Y), numpy.uint8))
 
 for x in range(X):
     for y in range(Y):
