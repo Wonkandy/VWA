@@ -6,6 +6,7 @@ import os.path
 import random
 from PIL import Image
 import cv2
+
 args = sys.argv
 
 class neuralNetwork:
