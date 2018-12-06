@@ -3,12 +3,13 @@ import numpy
 import scipy.special
 import matplotlib.pyplot as mpl
 import os.path
+import os
 import random
 import math
 from PIL import Image
 import cv2
 from scipy import ndimage
-
+import time
 
 class neuralNetwork:
 
@@ -74,74 +75,75 @@ class neuralNetwork:
         return shifted
 
 
+input_nodes = 784
+hidden_nodes = 50
+output_nodes = 10
+epochs = 3
+learning_rate = 0.3
 
 
-if input("Was willst du (train / testdrawing): ") == "train":
-    input_nodes = 784
-    hidden_nodes = 50
-    output_nodes = 10
-    epochs = 1
-    learning_rate = 0.3
+if input("Trainieren? (y/n): ") == "y":
 
-    n = neuralNetwork(input_nodes, hidden_nodes, output_nodes, learning_rate)
+    for i in range(10):
+        n = neuralNetwork(input_nodes, hidden_nodes, output_nodes, learning_rate)
 
-    training_data_file = open("mnist_train.csv", 'r')
-    training_data_list = training_data_file.readlines()
-    training_data_file.close()
-    random.shuffle(training_data_list)
+        training_data_file = open("mnist_train.csv", 'r')
+        training_data_list = training_data_file.readlines()
+        training_data_file.close()
+        random.shuffle(training_data_list)
+        items = 0
+        for e in range(epochs):
 
-    for e in range(epochs):
+            #print("Epoche: " + str(e+1))
+            for record in training_data_list:
 
-        for record in training_data_list:
+                items += 1
+                #if (items % 10000) == 0:
+                    #print("Item: " + str(items))
+
+                all_values = record.split(',')
+
+                inputs = (numpy.asfarray(all_values[1:]) / 255.0 * 0.99) + 0.01
+
+                targets = numpy.zeros(output_nodes) + 0.01
+
+                targets[int(all_values[0])] = 0.99
+                n.train(inputs, targets)
+                pass
+            pass
+
+        n.save()
+
+        test_data_file = open("mnist_test.csv", 'r')
+        test_data_list = test_data_file.readlines()
+        test_data_file.close()
+        all_values = test_data_list[0].split(",")
+
+        scorecard = []
+
+        for record in test_data_list:
 
             all_values = record.split(',')
 
+            correct_label = int(all_values[0])
+
             inputs = (numpy.asfarray(all_values[1:]) / 255.0 * 0.99) + 0.01
 
-            targets = numpy.zeros(output_nodes) + 0.01
+            outputs = n.query(inputs)
 
-            targets[int(all_values[0])] = 0.99
-            n.train(inputs, targets)
+            label = numpy.argmax(outputs)
+
+            if (label == correct_label):
+                scorecard.append(1)
+            else:
+                scorecard.append(0)
+                pass
             pass
-        pass
 
-    n.save()
+        scorecard_array = numpy.asarray(scorecard)
+        print("Performance is ", scorecard_array.sum() / scorecard_array.size)
 
-    test_data_file = open("mnist_test.csv", 'r')
-    test_data_list = test_data_file.readlines()
-    test_data_file.close()
-    all_values = test_data_list[0].split(",")
-
-    scorecard = []
-
-    for record in test_data_list:
-
-        all_values = record.split(',')
-
-        correct_label = int(all_values[0])
-
-        inputs = (numpy.asfarray(all_values[1:]) / 255.0 * 0.99) + 0.01
-
-        outputs = n.query(inputs)
-
-        label = numpy.argmax(outputs)
-
-        if (label == correct_label):
-            scorecard.append(1)
-        else:
-            scorecard.append(0)
-            pass
-        pass
-
-    scorecard_array = numpy.asarray(scorecard)
-    print("Performance is ", scorecard_array.sum() / scorecard_array.size)
-
-if input("Was willst du (train / test): ") == "test":
-
-    input_nodes = 784
-    hidden_nodes = 50
-    output_nodes = 10
-    learning_rate = 0.3
+if input("Testen? (y/n): ") == "y":
 
     n = neuralNetwork(input_nodes, hidden_nodes, output_nodes, learning_rate)
 
