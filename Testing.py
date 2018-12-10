@@ -1,7 +1,7 @@
 import sys
 import numpy
 import scipy.special
-import matplotlib.pyplot as mpl
+import matplotlib.pyplot
 import os.path
 import os
 import random
@@ -21,6 +21,7 @@ class neuralNetwork:
         self.who = numpy.random.normal(0.0, pow(self.hnodes, -0.5), (self.onodes, self.hnodes))
         self.lr = learningrate
         self.activation_function = lambda x: scipy.special.expit(x)
+        self.inverse_activation_function = lambda x: scipy.special.logit(x)
         pass
 
     def train(self, inputs_list, targets_list):
@@ -59,6 +60,37 @@ class neuralNetwork:
         return False
         pass
 
+        # backquery the neural network
+        # we'll use the same termnimology to each item,
+        # eg target are the values at the right of the network, albeit used as input
+        # eg hidden_output is the signal to the right of the middle nodes
+    def backquery(self, targets_list):
+        # transpose the targets list to a vertical array
+        final_outputs = numpy.array(targets_list, ndmin=2).T
+
+        # calculate the signal into the final output layer
+        final_inputs = self.inverse_activation_function(final_outputs)
+
+        # calculate the signal out of the hidden layer
+        hidden_outputs = numpy.dot(self.who.T, final_inputs)
+        # scale them back to 0.01 to .99
+        hidden_outputs -= numpy.min(hidden_outputs)
+        hidden_outputs /= numpy.max(hidden_outputs)
+        hidden_outputs *= 0.98
+        hidden_outputs += 0.01
+        # calculate the signal into the hidden layer
+        hidden_inputs = self.inverse_activation_function(hidden_outputs)
+
+        # calculate the signal out of the input layer
+        inputs = numpy.dot(self.wih.T, hidden_inputs)
+        # scale them back to 0.01 to .99
+        inputs -= numpy.min(inputs)
+        inputs /= numpy.max(inputs)
+        inputs *= 0.98
+        inputs += 0.01
+
+        return inputs
+
     def getBestShift(self, img):
         cy, cx = ndimage.measurements.center_of_mass(img)
 
@@ -78,18 +110,22 @@ class neuralNetwork:
 input_nodes = 784
 hidden_nodes = 50
 output_nodes = 10
-epochs = 3
+epochs = 1
 learning_rate = 0.3
 
+training_data_file = open("own_train_2050.csv", 'r')
+training_data_list = training_data_file.readlines()
+training_data_file.close()
+
+test_data_file = open("own_test_300.csv", 'r')
+test_data_list = test_data_file.readlines()
+test_data_file.close()
 
 if input("Trainieren? (y/n): ") == "y":
 
-    for i in range(10):
+    for i in range(epochs):
         n = neuralNetwork(input_nodes, hidden_nodes, output_nodes, learning_rate)
 
-        training_data_file = open("mnist_train.csv", 'r')
-        training_data_list = training_data_file.readlines()
-        training_data_file.close()
         random.shuffle(training_data_list)
         items = 0
         for e in range(epochs):
@@ -114,9 +150,7 @@ if input("Trainieren? (y/n): ") == "y":
 
         n.save()
 
-        test_data_file = open("mnist_test.csv", 'r')
-        test_data_list = test_data_file.readlines()
-        test_data_file.close()
+
         all_values = test_data_list[0].split(",")
 
         scorecard = []
@@ -196,9 +230,6 @@ if input("Testen? (y/n): ") == "y":
     shifted = n.shift(gray, shiftx, shifty)
     gray = shifted
 
-
-
-
     if n.load():
         flat = gray.flatten()
         all_values = flat
@@ -213,3 +244,24 @@ if input("Testen? (y/n): ") == "y":
     else:
         print("Nix da")
 
+# run the network backwards, given a label, see what image it produces
+
+n = neuralNetwork(input_nodes, hidden_nodes, output_nodes, learning_rate)
+n.load()
+# label to test
+label = int(input("Backquery: (0 - 9): "))
+if label < 0 or label > 9:
+    print("Ich hab gesagt von 0 bis 9!")
+else:
+    # create the output signals for this label
+    targets = numpy.zeros(output_nodes) + 0.01
+    # all_values[0] is the target label for this record
+    targets[label] = 0.99
+    print(targets)
+
+    # get image data
+    image_data = n.backquery(targets)
+
+    # plot image data
+    matplotlib.pyplot.imshow(image_data.reshape(28, 28), cmap='Greys', interpolation='None')
+    matplotlib.pyplot.show()
