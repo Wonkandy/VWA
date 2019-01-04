@@ -1,15 +1,11 @@
-import sys
 import numpy
 import scipy.special
+import scipy.ndimage
 import matplotlib.pyplot
 import os.path
-import os
 import random
 import math
-from PIL import Image
 import cv2
-from scipy import ndimage
-import time
 
 class neuralNetwork:
 
@@ -33,10 +29,8 @@ class neuralNetwork:
         final_outputs = self.activation_function(final_inputs)
         output_errors = targets - final_outputs
         hidden_errors = numpy.dot(self.who.T, output_errors)
-        self.who += self.lr * numpy.dot((output_errors * final_outputs * (1.0 - final_outputs)),
-                                        numpy.transpose(hidden_outputs))
-        self.wih += self.lr * numpy.dot((hidden_errors * hidden_outputs * (1.0 - hidden_outputs)),
-                                        numpy.transpose(inputs))
+        self.who += self.lr * numpy.dot((output_errors * final_outputs * (1.0 - final_outputs)), numpy.transpose(hidden_outputs))
+        self.wih += self.lr * numpy.dot((hidden_errors * hidden_outputs * (1.0 - hidden_outputs)), numpy.transpose(inputs))
         pass
 
     def query(self, inputs_list):
@@ -60,10 +54,6 @@ class neuralNetwork:
         return False
         pass
 
-        # backquery the neural network
-        # we'll use the same termnimology to each item,
-        # eg target are the values at the right of the network, albeit used as input
-        # eg hidden_output is the signal to the right of the middle nodes
     def backquery(self, targets_list):
         # transpose the targets list to a vertical array
         final_outputs = numpy.array(targets_list, ndmin=2).T
@@ -92,7 +82,7 @@ class neuralNetwork:
         return inputs
 
     def getBestShift(self, img):
-        cy, cx = ndimage.measurements.center_of_mass(img)
+        cy, cx = scipy.ndimage.measurements.center_of_mass(img)
 
         rows, cols = img.shape
         shiftx = numpy.round(cols / 2.0 - cx).astype(int)
@@ -105,7 +95,6 @@ class neuralNetwork:
         M = numpy.float32([[1, 0, sx], [0, 1, sy]])
         shifted = cv2.warpAffine(img, M, (cols, rows))
         return shifted
-
 
 input_nodes = 784
 hidden_nodes = 50
@@ -242,22 +231,18 @@ if input("Testen? (y/n): ") == "y":
         print("Netz sagt: ", str(label))
 
     else:
-        print("Nix da")
+        print("Fehler in n.load()")
 
-# run the network backwards, given a label, see what image it produces
-
-n = neuralNetwork(input_nodes, hidden_nodes, output_nodes, learning_rate)
-n.load()
-# label to test
 label = int(input("Backquery: (0 - 9): "))
 if label < 0 or label > 9:
     print("Ich hab gesagt von 0 bis 9!")
 else:
+    n = neuralNetwork(input_nodes, hidden_nodes, output_nodes, learning_rate)
+    n.load()
     # create the output signals for this label
     targets = numpy.zeros(output_nodes) + 0.01
     # all_values[0] is the target label for this record
     targets[label] = 0.99
-    print(targets)
 
     # get image data
     image_data = n.backquery(targets)
