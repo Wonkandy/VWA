@@ -113,18 +113,15 @@ test_data_file.close()
 if input("Trainieren? (y/n): ") == "y":
 
     for i in range(epochs):
-        n = neuralNetwork(input_nodes, hidden_nodes, output_nodes, learning_rate)
 
+        n = neuralNetwork(input_nodes, hidden_nodes, output_nodes, learning_rate)
         random.shuffle(training_data_list)
         items = 0
         for e in range(epochs):
 
-            #print("Epoche: " + str(e+1))
             for record in training_data_list:
 
                 items += 1
-                #if (items % 10000) == 0:
-                    #print("Item: " + str(items))
 
                 all_values = record.split(',')
 
@@ -134,6 +131,7 @@ if input("Trainieren? (y/n): ") == "y":
 
                 targets[int(all_values[0])] = 0.99
                 n.train(inputs, targets)
+
                 pass
             pass
 
@@ -231,7 +229,7 @@ if input("Testen? (y/n): ") == "y":
         print("Netz sagt: ", str(label))
 
     else:
-        print("Fehler in n.load()")
+        print("Fehler in n.load(), anscheinend keine Gewichte vorhanden.")
 
 label = int(input("Backquery: (0 - 9): "))
 if label < 0 or label > 9:
