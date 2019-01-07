@@ -224,7 +224,7 @@ if input("Testen? (y/n): ") == "y":
         inputs = (numpy.asfarray(all_values[0:]) / 255.0 * 0.99) + 0.01
 
         outputs = n.query(inputs)
-
+        print(outputs)
         label = numpy.argmax(outputs)
         print("Netz sagt: ", str(label))
 
