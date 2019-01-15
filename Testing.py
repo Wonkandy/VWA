@@ -6,6 +6,7 @@ import os.path
 import random
 import math
 import cv2
+import time
 
 class neuralNetwork:
 
@@ -83,11 +84,9 @@ class neuralNetwork:
 
     def getBestShift(self, img):
         cy, cx = scipy.ndimage.measurements.center_of_mass(img)
-
         rows, cols = img.shape
         shiftx = numpy.round(cols / 2.0 - cx).astype(int)
         shifty = numpy.round(rows / 2.0 - cy).astype(int)
-
         return shiftx, shifty
 
     def shift(self, img, sx, sy):
@@ -97,51 +96,43 @@ class neuralNetwork:
         return shifted
 
 input_nodes = 784
-hidden_nodes = 50
+hidden_nodes = 100
 output_nodes = 10
-epochs = 1
-learning_rate = 0.3
+epochs = 2
+learning_rate = 0.2
 
-training_data_file = open("own_train_2050.csv", 'r')
+training_data_file = open("mnist_train.csv", 'r')
 training_data_list = training_data_file.readlines()
 training_data_file.close()
 
-test_data_file = open("own_test_300.csv", 'r')
+test_data_file = open("mnist_test.csv", 'r')
 test_data_list = test_data_file.readlines()
 test_data_file.close()
 
 if input("Trainieren? (y/n): ") == "y":
 
-    for i in range(epochs):
-
-        n = neuralNetwork(input_nodes, hidden_nodes, output_nodes, learning_rate)
-        random.shuffle(training_data_list)
-        items = 0
-        for e in range(epochs):
-
-            for record in training_data_list:
-
-                items += 1
-
-                all_values = record.split(',')
-
-                inputs = (numpy.asfarray(all_values[1:]) / 255.0 * 0.99) + 0.01
-
-                targets = numpy.zeros(output_nodes) + 0.01
-
-                targets[int(all_values[0])] = 0.99
-                n.train(inputs, targets)
-
-                pass
-            pass
-
-        n.save()
+    n = neuralNetwork(input_nodes, hidden_nodes, output_nodes, learning_rate)
+    random.shuffle(training_data_list)
+    timee = 0
+    for e in range(epochs):
+        a = time.time()
+        for record in training_data_list:
 
 
+
+            all_values = record.split(',')
+
+            inputs = (numpy.asfarray(all_values[1:]) / 255.0 * 0.99) + 0.01
+
+            targets = numpy.zeros(output_nodes) + 0.01
+
+            targets[int(all_values[0])] = 0.99
+            n.train(inputs, targets)
+        b = time.time()
+        timee += (b-a)
+        print(round(b-a,2),"s elapsed for epoch ",e+1)
         all_values = test_data_list[0].split(",")
-
         scorecard = []
-
         for record in test_data_list:
 
             all_values = record.split(',')
@@ -155,14 +146,43 @@ if input("Trainieren? (y/n): ") == "y":
             label = numpy.argmax(outputs)
 
             if (label == correct_label):
-                scorecard.append(1)
+                    scorecard.append(1)
             else:
-                scorecard.append(0)
-                pass
+                    scorecard.append(0)
             pass
-
         scorecard_array = numpy.asarray(scorecard)
-        print("Performance is ", scorecard_array.sum() / scorecard_array.size)
+        print("Performance is ", round(scorecard_array.sum() / scorecard_array.size * 100,2), "%")
+    print("Training took: ",int(round(timee/60,0)),"min :",int(round(timee%60,0)),"sec")
+
+
+    n.save()
+
+
+    all_values = test_data_list[0].split(",")
+    scorecard = []
+    for record in test_data_list:
+
+        all_values = record.split(',')
+
+        correct_label = int(all_values[0])
+
+        inputs = (numpy.asfarray(all_values[1:]) / 255.0 * 0.99) + 0.01
+
+        outputs = n.query(inputs)
+
+        label = numpy.argmax(outputs)
+
+        if (label == correct_label):
+                scorecard.append(1)
+        else:
+                scorecard.append(0)
+        pass
+    scorecard_array = numpy.asarray(scorecard)
+    print("Performance is ", round(scorecard_array.sum() / scorecard_array.size * 100,2), "%")
+
+
+
+
 
 if input("Testen? (y/n): ") == "y":
 
@@ -170,49 +190,32 @@ if input("Testen? (y/n): ") == "y":
 
     # read the image
     gray = cv2.imread("drei.bmp", 0)
-
-    # resize the images and invert it (black background)
     gray = cv2.resize(255 - gray, (28, 28))
-
-    # save the processed images
     cv2.imwrite("processed_drei.bmp", gray)
-
-    # better black and white version
     (thresh, gray) = cv2.threshold(gray, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
-
     while numpy.sum(gray[0]) == 0:
         gray = gray[1:]
-
     while numpy.sum(gray[:, 0]) == 0:
         gray = numpy.delete(gray, 0, 1)
-
     while numpy.sum(gray[-1]) == 0:
         gray = gray[:-1]
-
     while numpy.sum(gray[:, -1]) == 0:
         gray = numpy.delete(gray, -1, 1)
-
     rows, cols = gray.shape
-
     if rows > cols:
         factor = 20.0 / rows
         rows = 20
         cols = int(round(cols * factor))
-        # first cols than rows
         gray = cv2.resize(gray, (cols, rows))
     else:
         factor = 20.0 / cols
         cols = 20
         rows = int(round(rows * factor))
-        # first cols than rows
         gray = cv2.resize(gray, (cols, rows))
-
     colsPadding = (int(math.ceil((28 - cols) / 2.0)), int(math.floor((28 - cols) / 2.0)))
     rowsPadding = (int(math.ceil((28 - rows) / 2.0)), int(math.floor((28 - rows) / 2.0)))
     gray = numpy.lib.pad(gray, (rowsPadding, colsPadding), 'constant')
     gray.flatten()
-
-
     shiftx, shifty = n.getBestShift(gray)
     shifted = n.shift(gray, shiftx, shifty)
     gray = shifted
@@ -224,7 +227,7 @@ if input("Testen? (y/n): ") == "y":
         inputs = (numpy.asfarray(all_values[0:]) / 255.0 * 0.99) + 0.01
 
         outputs = n.query(inputs)
-        print(outputs)
+        print(numpy.around(outputs,4))
         label = numpy.argmax(outputs)
         print("Netz sagt: ", str(label))
 
