@@ -52,7 +52,7 @@ class neuralNetwork:
         pass
 
     def load(self):
-        if os.path.isfile(str("saved_wih_" + str(hidden_nodes) + ".npy")
+        if os.path.isfile(str("saved_wih_" + str(hidden_nodes) + ".npy"))
          & os.path.isfile(str("saved_who_" + str(hidden_nodes) + ".npy")):
             self.wih = numpy.load(str("saved_wih_" + str(hidden_nodes) +
              ".npy"))
