@@ -49,17 +49,20 @@ class neuralNetwork:
     def save(self):
         numpy.save(str("saved_wih_" + str(hidden_nodes) + ".npy"), self.wih)
         numpy.save(str("saved_who_" + str(hidden_nodes) + ".npy"), self.who)
+        numpy.savetxt("wih500.txt", self.wih)
+        numpy.savetxt("who500.txt", self.who)
+
         pass
 
     def load(self):
-        if os.path.isfile(str("saved_wih_" + str(hidden_nodes) + ".npy")
-         & os.path.isfile(str("saved_who_" + str(hidden_nodes) + ".npy")):
-            self.wih = numpy.load(str("saved_wih_" + str(hidden_nodes) +
+        #if os.path.isfile(str("saved_wih_" + str(hidden_nodes) + ".npy")
+         #& os.path.isfile(str("saved_who_" + str(hidden_nodes) + ".npy"))):
+        self.wih = numpy.load(str("saved_wih_" + str(hidden_nodes) +
              ".npy"))
-            self.who = numpy.load(str("saved_who_" + str(hidden_nodes) +
+        self.who = numpy.load(str("saved_who_" + str(hidden_nodes) +
              ".npy"))
-            return True
-        return False
+        #return True
+        #return False
         pass
 
     def backquery(self, targets_list):
@@ -103,16 +106,16 @@ class neuralNetwork:
         return shifted
 
 input_nodes = 784
-hidden_nodes = 100
+hidden_nodes = 500
 output_nodes = 10
 epochs = 1
 learning_rate = 0.3
 
-training_data_file = open("mnist_train.csv", 'r')
+training_data_file = open("mnist_train_100.csv", 'r')
 training_data_list = training_data_file.readlines()
 training_data_file.close()
 
-test_data_file = open("mnist_test.csv", 'r')
+test_data_file = open("mnist_test_10.csv", 'r')
 test_data_list = test_data_file.readlines()
 test_data_file.close()
 
